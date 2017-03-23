@@ -1,0 +1,304 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../app-localize-mixin/app-localize-mixin.html">
+<link rel="import" href="../goc-apps/goc-app-icon.html">
+<link rel="import" href="../goc-apps/goc-apps-collection.html">
+<link rel="import" href="../goc-icons/goc-icons.html">
+<link rel="import" href="../goc-styles/goc-styles.html">
+<link rel="import" href="../paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../input-file/input-file.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-image/iron-image.html">
+<link rel="import" href="app-physical-web-sign-player.html">
+
+<dom-module id="app-physical-web-sign">
+  <template>
+    <style include="header-layout-styles btn-styles icon-btn-styles missing-well-styles box-styles form-styles">
+      :host {
+        display: block;
+      }
+
+      .preview-container {
+        margin-bottom: 20px;
+      }
+    </style>
+
+    <input-file
+        id="inputFile"
+        multiple="false"
+        on-files-selected="_onFileSelected"
+        on-files-loaded="_onFileLoaded"></input-file>
+
+    <goc-apps-collection
+        app-name="physical-web-sign"
+        item="{{appInfo}}"
+        language="[[language]]"></goc-apps-collection>
+
+    <div class="header-layout">
+      <div class="header-layout__header">
+        <div class="header-toolbar">
+          <button
+              class="icon-btn icon-btn--primary"
+              on-click="_onBackTapped"
+              title="[[localize('EditorPage.Header.BackButton')]]">
+              <touch-item><iron-icon icon="arrow-back"></iron-icon></touch-item>
+          </button>
+
+          <goc-app-icon size="small" app-name="physical-web-sign"></goc-app-icon>
+
+          <div class="header-toolbar__main-content">
+            <div class="header-toolbar__title">[[contentName]]</div>
+            <div class="header-toolbar__subtitle">[[appInfo.displayName]]</div>
+          </div>
+
+          <paper-spinner-lite class="header-layout__spinner" active="[[loading]]"></paper-spinner-lite>
+        </div>
+      </div>
+
+      <div class="header-layout__content">
+        <div class="col">
+          <div class="preview-container" style$="[[_computePreviewBackgrond(data.backgroundColor)]]">
+            <app-physical-web-sign-player data="[[data]]"></app-physical-web-sign-player>
+          </div>
+        </div>
+
+        <div class="col col--last">
+          <div class="box">
+            <div class="form">
+
+              <div class="form__item">
+                <div class="form__label">[[localize('EditorPage.Options.TextTitle.Label')]]</div>
+                <color-input class="form__input-container">
+                  <input
+                      name="textTitle"
+                      class="form__input"
+                      value="[[data.textTitle]]"
+                      on-keyup="_textTitleChanged"
+                      placeholder$="[[localize('EditorPage.Options.TextTitle.Placeholder')]]">
+                </color-input>
+              </div>
+
+              <div class="form__item">
+                <div class="form__label">[[localize('EditorPage.Options.TextSubtitle.Label')]]</div>
+                <color-input class="form__input-container">
+                  <input
+                      name="textSubtitle"
+                      class="form__input"
+                      value="[[data.textSubtitle]]"
+                      on-keyup="_textSubtitleChanged"
+                      placeholder$="[[localize('EditorPage.Options.TextSubtitle.Placeholder')]]">
+                </color-input>
+              </div>
+
+              <div class="form__item">
+                <div class="form__label">[[localize('EditorPage.Options.BackgroundColor.Label')]]</div>
+                <color-input class="form__input-container">
+                  <input
+                      name="backgroundColor"
+                      class="form__input"
+                      value="[[data.backgroundColor]]"
+                      on-keyup="_backgroundColorChanged"
+                      placeholder$="[[localize('EditorPage.Options.BackgroundColor.Placeholder')]]">
+                </color-input>
+              </div>
+
+              <div class="form__item form__item--last">
+                <div class="form__label">[[localize('EditorPage.Options.TextColor.Label')]]</div>
+                <color-input class="form__input-container">
+                  <input
+                      name="textColor"
+                      class="form__input"
+                      value="[[data.textColor]]"
+                      on-keyup="_textColorChanged"
+                      placeholder$="[[localize('EditorPage.Options.TextColor.Placeholder')]]">
+                </color-input>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </template>
+
+  <script>
+
+    class AppPhysicalWebSign extends AppLocalizeMixin(Polymer.Element) {
+
+      static get is() {return 'app-physical-web-sign';}
+
+      static get properties() {
+        return {
+          _defaultData: {
+            type: Object,
+            value: _ => {
+              return {
+                backgroundColor: '#1871e8',
+                textTitle: 'Enable your bluetooth to explore more content',
+                textSubtitle: 'Learn more about the Physical Web: bitly.com/1svmKII',
+                textColor: '#fff',
+              };
+            },
+          },
+
+          data: {
+            type: Object,
+            observer: '_dataChanged'
+          },
+
+          release: Object,
+
+          contentId: Number,
+
+          dataUpdatedAt: Number,
+
+          releaseUpdatedAt: Number,
+
+          contentName: String,
+
+          visible: Boolean,
+
+          loading: {
+            type: Boolean,
+            value: false
+          },
+
+          language: {
+            type: String,
+            value: _ => 'en'
+          },
+
+          resources: {
+            type: Object,
+            value() {
+              return {
+                en: {
+                  'EditorPage.Header.AddButton': 'Upload image',
+                  'EditorPage.Header.BackButton': 'Back',
+                  'EditorPage.List.Empty.Title': 'Upload an image by clicking on the top right button',
+                  'EditorPage.Options.BackgroundColor.Label': 'Fill background',
+                  'EditorPage.Options.BackgroundColor.Placeholder': 'hex, rgb, rgba or color name',
+                  'EditorPage.Options.TextTitle.Label': 'Title',
+                  'EditorPage.Options.TextTitle.Placeholder': 'Text',
+                  'EditorPage.Options.TextSubtitle.Label': 'Subtitle',
+                  'EditorPage.Options.TextSubtitle.Placeholder': 'Text',
+                  'EditorPage.Options.TextColor.Label': 'Text color',
+                  'EditorPage.Options.TextColor.Placeholder': 'hex, rgb, rgba or color name',
+                },
+
+                es: {
+                  'EditorPage.Header.AddButton': 'Subir imagen',
+                  'EditorPage.Header.BackButton': 'Atrás',
+                  'EditorPage.List.Empty.Title': 'Para subir una imagen haz click en el botón de la esquina superior derecha',
+                  'EditorPage.Options.BackgroundColor.Label': 'Fondo de relleno',
+                  'EditorPage.Options.BackgroundColor.Placeholder': 'hex, rgb, rgba o nombre del color',
+                  'EditorPage.Options.TextTitle.Label': 'Titulo del texto',
+                  'EditorPage.Options.TextTitle.Placeholder': 'Texto',
+                  'EditorPage.Options.TextSubtitle.Label': 'Subtítulo',
+                  'EditorPage.Options.TextSubtitle.Placeholder': 'Text',
+                  'EditorPage.Options.TextColor.Label': 'Color del texto',
+                  'EditorPage.Options.TextColor.Placeholder': 'hex, rgb, rgba o nombre del color',
+                }
+              };
+            }
+          },
+
+          _imageUrl: String
+        };
+      }
+
+      constructor() {
+        super();
+        this._lastFile = null;
+      }
+
+      _dataChanged(data) {
+        console.log('change')
+        // Initialize data.
+        if (data === null) {
+          this.data = Object.assign({}, this._defaultData);
+        }
+      }
+
+      _backgroundColorChanged() {
+        const input = this.root.querySelector('input[name=backgroundColor]');
+        const backgroundColor = input.value;
+        const isValid = !backgroundColor || this._isColorValid(backgroundColor);
+        const hasChanged = this.data.backgroundColor !== backgroundColor;
+
+        if (isValid && hasChanged) {
+          this.set('data.backgroundColor', backgroundColor);
+          this._notifyContentUpdate();
+        }
+      }
+
+      _textColorChanged() {
+        const input = this.root.querySelector('input[name=textColor]');
+        const textColor = input.value;
+        const isValid = !textColor || this._isColorValid(textColor);
+        const hasChanged = this.data.textColor !== textColor;
+
+        if (isValid && hasChanged) {
+          this.set('data.textColor', textColor);
+          this._notifyContentUpdate();
+        }
+      }
+
+      _textTitleChanged() {
+        const input = this.root.querySelector('input[name=textTitle]');
+        const text = input.value;
+        const hasChanged = this.data.text !== text;
+
+        if (hasChanged) {
+          this.set('data.textTitle', text);
+          this._notifyContentUpdate();
+        }
+      }
+
+      _textSubtitleChanged() {
+        const input = this.root.querySelector('input[name=textSubtitle]');
+        const text = input.value;
+        const hasChanged = this.data.text !== text;
+
+        if (hasChanged) {
+          this.set('data.textSubtitle', text);
+          this._notifyContentUpdate();
+        }
+      }
+
+      _onBackTapped() {
+        this.dispatchEvent(new Event('close-app', {composed: true}));
+      }
+
+      _notifyContentUpdate() {
+        this.dispatchEvent(new CustomEvent('content-update', {
+          composed: true,
+          detail: {
+            data: this.data,
+            contentId: this.contentId,
+            // directly to channel release
+            updateRelease: true,
+          }
+        }));
+      }
+
+      _computePreviewBackgrond(backgroundColor) {
+        if (backgroundColor) {
+          return `background: ${backgroundColor}`;
+        }
+        return `background: linear-gradient(to right, rgba(0,0,0,0), transparent), url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAADNJREFUOBFjvHHjxn8GPEBDQ4MRjzQDEz5JYuRGDWAYBIGIN45B0UgonYxG42CIRopjAQAbjQemQaw2YQAAAABJRU5ErkJggg==')`;
+      }
+
+      _isColorValid(color) {
+        const el = document.createElement('div');
+        el.style.backgroundColor = color;
+        return Boolean(el.style.backgroundColor);
+      }
+
+    }
+
+    customElements.define(AppPhysicalWebSign.is, AppPhysicalWebSign);
+
+  </script>
+</dom-module>

@@ -1,0 +1,29 @@
+{
+  "name": "app-physical-web-sign",
+  "main": "app-physical-web-sign.html",
+  "version": "1.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "app-localize-mixin": "git@github.com:sharedlabs/app-localize-mixin.git#^1.0.0",
+    "goc-apps": "git@github.com:gocast/goc-apps.git",
+    "goc-icons": "git@github.com:gocast/goc-icons.git",
+    "goc-styles": "git@github.com:gocast/goc-styles.git",
+    "input-file": "git@github.com:sharedlabs/input-file.git",
+    "iron-image": "PolymerElements/iron-image#2.0-preview",
+    "paper-spinner": "PolymerElements/paper-spinner#2.0-preview",
+    "polymer": "Polymer/polymer#v2.0.0-rc.3"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#2.0-preview",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "resolutions": {
+    "webcomponentsjs": "v1",
+    "polymer": "v2.0.0-rc.3",
+    "iron-iconset-svg": "2.0-preview",
+    "iron-icon": "2.0-preview",
+    "iron-flex-layout": "2.0-preview",
+    "iron-meta": "2.0-preview"
+  }
+}

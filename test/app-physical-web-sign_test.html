@@ -1,0 +1,32 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>app-physical-web-sign-player test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../app-physical-web-sign-player.html">
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        <app-physical-web-sign-player></app-physical-web-sign-player>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('app-physical-web-sign-player', function() {
+
+        test('instantiating the element works', function() {
+          let element = fixture('basic');
+          assert.equal(element.is, 'app-physical-web-sign-player');
+        });
+
+      });
+    </script>
+  </body>
+</html>
