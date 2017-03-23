@@ -52,6 +52,10 @@
           </div>
 
           <paper-spinner-lite class="header-layout__spinner" active="[[loading]]"></paper-spinner-lite>
+
+          <button class="btn btn--primary" disabled="{{!computeCanSave(_changesUnsaved)}}" on-click="_updateContent">
+            <touch-item>[[localize('EditorPage.Header.Button.Save')]]</touch-item>
+          </button>
         </div>
       </div>
 
@@ -176,35 +180,41 @@
                 en: {
                   'EditorPage.Header.AddButton': 'Upload image',
                   'EditorPage.Header.BackButton': 'Back',
+                  'EditorPage.Header.Button.Save': 'Save changes',
                   'EditorPage.List.Empty.Title': 'Upload an image by clicking on the top right button',
                   'EditorPage.Options.BackgroundColor.Label': 'Fill background',
                   'EditorPage.Options.BackgroundColor.Placeholder': 'hex, rgb, rgba or color name',
-                  'EditorPage.Options.TextTitle.Label': 'Title',
-                  'EditorPage.Options.TextTitle.Placeholder': 'Text',
-                  'EditorPage.Options.TextSubtitle.Label': 'Subtitle',
-                  'EditorPage.Options.TextSubtitle.Placeholder': 'Text',
                   'EditorPage.Options.TextColor.Label': 'Text color',
                   'EditorPage.Options.TextColor.Placeholder': 'hex, rgb, rgba or color name',
+                  'EditorPage.Options.TextSubtitle.Label': 'Subtitle',
+                  'EditorPage.Options.TextSubtitle.Placeholder': 'Text',
+                  'EditorPage.Options.TextTitle.Label': 'Title',
+                  'EditorPage.Options.TextTitle.Placeholder': 'Text',
                 },
 
                 es: {
                   'EditorPage.Header.AddButton': 'Subir imagen',
                   'EditorPage.Header.BackButton': 'Atrás',
+                  'EditorPage.Header.Button.Save': 'Guardar cambios',
                   'EditorPage.List.Empty.Title': 'Para subir una imagen haz click en el botón de la esquina superior derecha',
                   'EditorPage.Options.BackgroundColor.Label': 'Fondo de relleno',
                   'EditorPage.Options.BackgroundColor.Placeholder': 'hex, rgb, rgba o nombre del color',
-                  'EditorPage.Options.TextTitle.Label': 'Titulo del texto',
-                  'EditorPage.Options.TextTitle.Placeholder': 'Texto',
-                  'EditorPage.Options.TextSubtitle.Label': 'Subtítulo',
-                  'EditorPage.Options.TextSubtitle.Placeholder': 'Text',
                   'EditorPage.Options.TextColor.Label': 'Color del texto',
                   'EditorPage.Options.TextColor.Placeholder': 'hex, rgb, rgba o nombre del color',
+                  'EditorPage.Options.TextSubtitle.Label': 'Subtítulo',
+                  'EditorPage.Options.TextSubtitle.Placeholder': 'Text',
+                  'EditorPage.Options.TextTitle.Label': 'Titulo del texto',
+                  'EditorPage.Options.TextTitle.Placeholder': 'Texto',
                 }
               };
             }
           },
 
-          _imageUrl: String
+          _changesUnsaved: {
+            type: Boolean,
+            value: false,
+          },
+
         };
       }
 
@@ -214,7 +224,6 @@
       }
 
       _dataChanged(data) {
-        console.log('change')
         // Initialize data.
         if (data === null) {
           this.data = Object.assign({}, this._defaultData);
@@ -229,7 +238,7 @@
 
         if (isValid && hasChanged) {
           this.set('data.backgroundColor', backgroundColor);
-          this._notifyContentUpdate();
+          this._changesUnsaved = true;
         }
       }
 
@@ -241,7 +250,7 @@
 
         if (isValid && hasChanged) {
           this.set('data.textColor', textColor);
-          this._notifyContentUpdate();
+          this._changesUnsaved = true;
         }
       }
 
@@ -252,7 +261,7 @@
 
         if (hasChanged) {
           this.set('data.textTitle', text);
-          this._notifyContentUpdate();
+          this._changesUnsaved = true;
         }
       }
 
@@ -263,7 +272,7 @@
 
         if (hasChanged) {
           this.set('data.textSubtitle', text);
-          this._notifyContentUpdate();
+          this._changesUnsaved = true;
         }
       }
 
@@ -271,7 +280,9 @@
         this.dispatchEvent(new Event('close-app', {composed: true}));
       }
 
-      _notifyContentUpdate() {
+      _updateContent() {
+        this._changesUnsaved = false;
+
         this.dispatchEvent(new CustomEvent('content-update', {
           composed: true,
           detail: {
@@ -279,6 +290,7 @@
             contentId: this.contentId,
             // directly to channel release
             updateRelease: true,
+            inmediate: true,
           }
         }));
       }
@@ -288,6 +300,10 @@
           return `background: ${backgroundColor}`;
         }
         return `background: linear-gradient(to right, rgba(0,0,0,0), transparent), url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAADNJREFUOBFjvHHjxn8GPEBDQ4MRjzQDEz5JYuRGDWAYBIGIN45B0UgonYxG42CIRopjAQAbjQemQaw2YQAAAABJRU5ErkJggg==')`;
+      }
+
+      computeCanSave(changesUnsaved) {
+        return changesUnsaved;
       }
 
       _isColorValid(color) {

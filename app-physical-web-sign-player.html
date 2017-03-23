@@ -7,6 +7,7 @@
       :host {
         display: flex;
         @apply --layout-horizontal;
+        align-items: center;
       }
 
       .text {
@@ -51,7 +52,22 @@
 
       static get properties() {
         return {
-          data: Object,
+          _defaultData: {
+            type: Object,
+            value: _ => {
+              return {
+                backgroundColor: '#1871e8',
+                textTitle: 'Enable your bluetooth to explore more content',
+                textSubtitle: 'Learn more about the Physical Web: bitly.com/1svmKII',
+                textColor: '#fff',
+              };
+            },
+          },
+
+          data: {
+            type: Object,
+            observer: '_dataChanged'
+          },
         };
       }
 
@@ -60,6 +76,12 @@
           '_backgroundColorChanged(data.backgroundColor)',
           '_textColorChanged(data.textColor)',
         ];
+      }
+
+      _dataChanged(data) {
+        if (data === null) {
+          this.data = Object.assign({}, this._defaultData);
+        }
       }
 
       _backgroundColorChanged(backgroundColor) {
