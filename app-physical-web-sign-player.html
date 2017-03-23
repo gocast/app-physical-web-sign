@@ -27,8 +27,8 @@
     </style>
 
     <svg id="svgText" viewBox="-20 -45 100 100" preserveAspectRatio="xMinYMin meet">
-      <text font-size="22">[[data.textTitle]]</text>
-      <text dy="20px" font-size="18" >[[data.textSubtitle]]</text>
+      <text font-size="23">[[data.textTitle]]</text>
+      <text dy="23px" font-size="19">[[data.textSubtitle]]</text>
     </svg>
 
     <svg id="physicalWebIcon" viewBox="0 0 24 24">
@@ -78,9 +78,14 @@
 
       _resizeIcon() {
         Polymer.RenderStatus.afterNextRender(null, _ => {
-          const height = this.getBoundingClientRect().height * 0.8;
-          this.$.physicalWebIcon.style.opacity = 1;
-          this.$.physicalWebIcon.style.width = `${height/1.173958488875616}px`;
+          const height = this.getBoundingClientRect().height;
+          if (height === 0) {
+            setTimeout(this._resizeIcon.bind(this), 32);
+          } else {
+            const iconHeightWidthRatio = 1.1739;
+            this.$.physicalWebIcon.style.opacity = 1;
+            this.$.physicalWebIcon.style.width = `${height * 0.8/iconHeightWidthRatio}px`;
+          }
         });
       }
 
